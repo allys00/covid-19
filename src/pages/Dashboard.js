@@ -6,32 +6,21 @@ import Select from "react-select";
 import Stats from "../components/Stats";
 import Loading from "../components/Loading";
 import { format } from "date-fns";
+import countryOptions from "../countries-pt.json";
 
 const Dashboard = () => {
   const { data: stats, loading } = useGet({
     path: "https://covid19.mathdro.id/api"
   });
 
-  const { data: dataCountries, loading: countriesLoading } = useGet({
-    path: "https://covid19.mathdro.id/api/countries"
-  });
-
-  const [country, setCountry] = useState({ value: "BRA", label: "Brazil" });
+  const [country, setCountry] = useState({ value: "BR", label: "Brasil" });
 
   const { data: countryData, loading: countryLoading, refetch } = useGet({
     path: `https://covid19.mathdro.id/api/countries/${country.value}`
   });
 
-  const countryOptions = useMemo(() => {
-    if (!dataCountries) return [];
-    return dataCountries.countries.map(({ name, iso3 }) => ({
-      label: name,
-      value: iso3
-    }));
-  }, [dataCountries]);
-
   const lastUpdate = useMemo(() => {
-    if(!stats) return;
+    if (!stats) return;
     return format(new Date(stats.lastUpdate), "dd/MM/yyyy 'ás' HH:mm:ss");
   }, [stats]);
 
@@ -56,7 +45,6 @@ const Dashboard = () => {
           <Title title={"Dados por país"} />
           <Select
             value={country}
-            isLoading={countriesLoading}
             isSearchable={true}
             options={countryOptions}
             onChange={changeCountry}
